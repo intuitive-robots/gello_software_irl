@@ -189,7 +189,7 @@ def main(args):
     obs = env.get_obs()
     joints = obs["joint_positions"]
     action = agent.act(obs)
-    if (action - joints > 0.5).any():
+    if (action[:-1] - joints[:-1] > 0.5).any():
         print("Action is too big")
 
         # print which joints are too big
