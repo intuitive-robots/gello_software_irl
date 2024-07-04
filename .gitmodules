@@ -4,3 +4,6 @@
 [submodule "third_party/DynamixelSDK"]
 	path = third_party/DynamixelSDK
 	url = https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+[submodule "irl_polymetis"]
+	path = irl_polymetis
+	url = git@github.com:intuitive-robots/irl_polymetis.git
