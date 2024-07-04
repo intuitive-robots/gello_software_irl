@@ -19,6 +19,7 @@ class ZMQServerRobot:
     ):
         self._robot = robot
         self._context = zmq.Context()
+        self._context.setsockopt(zmq.RCVTIMEO, 1000)  # Set timeout to 1000 ms
         self._socket = self._context.socket(zmq.REP)
         addr = f"tcp://{host}:{port}"
         debug_message = f"Robot Sever Binding to {addr}, Robot: {robot}"
@@ -29,7 +30,6 @@ class ZMQServerRobot:
 
     def serve(self) -> None:
         """Serve the leader robot state over ZMQ."""
-        self._socket.setsockopt(zmq.RCVTIMEO, 1000)  # Set timeout to 1000 ms
         while not self._stop_event.is_set():
             try:
                 # Wait for next request from client
