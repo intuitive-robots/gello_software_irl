@@ -59,33 +59,23 @@ def get_config(args: Args) -> None:
         driver.get_joints()  # warmup
 
     for _ in range(1):
-        best_offsets = []
-        curr_joints = driver.get_joints()
-        for i in range(args.num_robot_joints):
-            best_offset = 0
-            best_error = 1e6
-            for offset in np.linspace(
-                -8 * np.pi, 8 * np.pi, 8 * 4 + 1
-            ):  # intervals of pi/2
-                error = get_error(offset, i, curr_joints)
-                if error < best_error:
-                    best_error = error
-                    best_offset = offset
-            best_offsets.append(best_offset)
-        print()
-        print("best offsets               : ", [f"{x:.3f}" for x in best_offsets])
-        print(
-            "best offsets function of pi: ["
-            + ", ".join([f"{int(np.round(x/(np.pi/2)))}*np.pi/2" for x in best_offsets])
-            + " ]",
-        )
+
+        curr_joints = driver.get_joints()[:args.num_robot_joints]
+        start_joints = np.array(args.start_joints)
+        joint_signs = np.array(args.joint_signs)
+        precise_offsets = curr_joints - joint_signs * start_joints
+        pi_offset = np.round(precise_offsets / (np.pi / 2)).astype(int)
+
+        print(f"Current joint position: {curr_joints}")
+        print(f"Precise offsets                   : {[f'{x:.3f}' for x in precise_offsets]}".replace("'", ""))
+        print(f"Closest offsets as multiple of pi : {[f'{x}*np.pi/2' for x in pi_offset]}".replace("'", ""))
         if args.gripper:
             print(
-                "gripper open (degrees)       ",
+                "Gripper open (degrees)       :",
                 np.rad2deg(driver.get_joints()[-1]) - 0.2,
             )
             print(
-                "gripper close (degrees)      ",
+                "Gripper closed (degrees)     :",
                 np.rad2deg(driver.get_joints()[-1]) - 42,
             )
 
