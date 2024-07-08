@@ -74,6 +74,12 @@ def launch_robot_server(args: Args):
             _robot_l = URRobot(robot_ip="192.168.2.10")
             _robot_r = URRobot(robot_ip="192.168.1.10")
             robot = BimanualRobot(_robot_l, _robot_r)
+        elif args.robot == "bimanual_panda":
+            from gello.robots.panda import PandaRobot
+
+            robot_l = PandaRobot(robot_ip=args.robot_ip, robot_port=50051, gripper_port=50052)  # TODO Add hardcoded ports to parameters
+            robot_r = PandaRobot(robot_ip=args.robot_ip, robot_port=50053, gripper_port=50054)  # TODO Add hardcoded ports to parameters
+            robot = BimanualRobot(robot_l, robot_r)
         elif args.robot == "none" or args.robot == "print":
             robot = PrintRobot(8)
 
