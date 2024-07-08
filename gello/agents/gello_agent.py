@@ -44,9 +44,15 @@ class DynamixelRobotConfig:
 
 
 PORT_CONFIG_MAP: Dict[str, DynamixelRobotConfig] = {
+    "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94ER3L-if00-port0": DynamixelRobotConfig(
+        joint_ids=(1, 2, 3, 4, 5, 6, 7),
+        joint_offsets=(4.628, 3.594, 1.108, 1.032, 3.217, 1.354, 8.275),
+        joint_signs=(1, 1, 1, -1, 1, 1, 1),
+        gripper_config=(8, 198, 148),
+    ),
     "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94EVRT-if00-port0": DynamixelRobotConfig(
         joint_ids=(1, 2, 3, 4, 5, 6, 7),
-        joint_offsets=(0.112, 2.752, 6.009, 6.618, 4.881, -0.424, 6.860),
+        joint_offsets=(5.974, 3.150, 6.026, 6.476, 4.798, -0.363, 6.719),
         joint_signs=(1, -1, 1, 1, 1, 1, 1),
         gripper_config=(8, 110, 60),
     ),
