@@ -7,11 +7,12 @@ from gello.robots.robot import Robot
 
 MAX_OPEN = 0.09
 
+RESPOSE = [0.2719, -0.5165, 0.2650, -1.6160, -0.0920, 1.6146, -1.9760] # Normal reset pose for kitchen robot
 
 class PandaRobot(Robot):
     """A class representing a UR robot."""
 
-    def __init__(self, robot_ip: str = "100.97.47.74", robot_port: int = 50051, gripper_port: int = 50052, reset_pose = [0.2719, -0.5165, 0.2650, -1.6160, -0.0920, 1.6146, -1.9760]):
+    def __init__(self, robot_ip: str = "100.97.47.74", robot_port: int = 50051, gripper_port: int = 50052, reset_pose = RESPOSE):
         from real_robot.real_robot_env.robot.hardware_franka import FrankaArm, ControlType
         from real_robot.real_robot_env.robot.hardware_frankahand import FrankaHand
 
@@ -23,6 +24,7 @@ class PandaRobot(Robot):
             default_reset_pose=reset_pose,
         )
         assert robot_arm.connect(), f"Connection to {robot_arm.name} failed"
+        robot_arm.reset()
 
         robot_gripper = FrankaHand(
             name=f"Franka gripper", ip_address=robot_ip, port=gripper_port
