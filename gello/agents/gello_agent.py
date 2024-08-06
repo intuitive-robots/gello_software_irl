@@ -1,12 +1,15 @@
-import os
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+import json
 from typing import Dict, Optional, Sequence, Tuple
+from pathlib import Path
 
 import numpy as np
 
 from gello.agents.agent import Agent
 from gello.robots.dynamixel import DynamixelRobot
 
+
+CONFIG_FOLDER_PATH = Path(__file__).parent.parent.parent / "configurations"
 
 @dataclass
 class DynamixelRobotConfig:
@@ -19,7 +22,7 @@ class DynamixelRobotConfig:
     joint_signs: Sequence[int]
     """The joint signs of GELLO. There needs to be a joint sign for each joint_id and should be either 1 or -1.
 
-    This will be different for each arm design. Refernce the examples below for the correct signs for your robot.
+    This will be different for each arm design. Reference the examples below for the correct signs for your robot.
     """
 
     gripper_config: Tuple[int, int, int]
@@ -42,81 +45,19 @@ class DynamixelRobotConfig:
             start_joints=start_joints,
         )
 
+def store_config(config: DynamixelRobotConfig, port: str, config_folder_path: str = CONFIG_FOLDER_PATH) -> None:
+    json_data =  json.dumps(asdict(config), indent=4)
+    path = Path(config_folder_path) / (Path(port).name + ".json")
+    path.parent.mkdir(parents=False, exist_ok=True)
+    with path.open(mode="w") as json_file:
+        json_file.write(json_data)
 
-PORT_CONFIG_MAP: Dict[str, DynamixelRobotConfig] = {
-    "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94ER3L-if00-port0": DynamixelRobotConfig(
-        joint_ids=(1, 2, 3, 4, 5, 6, 7),
-        joint_offsets=(4.628, 3.594, 1.108, 1.032, 3.217, 1.354, 8.275),
-        joint_signs=(1, 1, 1, -1, 1, 1, 1),
-        gripper_config=(8, 198, 148),
-    ),
-    "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94EVRT-if00-port0": DynamixelRobotConfig(
-        joint_ids=(1, 2, 3, 4, 5, 6, 7),
-        joint_offsets=(5.974, 3.150, 6.026, 6.476, 4.798, -0.363, 6.719),
-        joint_signs=(1, -1, 1, 1, 1, 1, 1),
-        gripper_config=(8, 110, 60),
-    ),
-    # xArm
-    # "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT3M9NVB-if00-port0": DynamixelRobotConfig(
-    #     joint_ids=(1, 2, 3, 4, 5, 6, 7),
-    #     joint_offsets=(
-    #         2 * np.pi / 2,
-    #         2 * np.pi / 2,
-    #         2 * np.pi / 2,
-    #         2 * np.pi / 2,
-    #         -1 * np.pi / 2 + 2 * np.pi,
-    #         1 * np.pi / 2,
-    #         1 * np.pi / 2,
-    #     ),
-    #     joint_signs=(1, 1, 1, 1, 1, 1, 1),
-    #     gripper_config=(8, 279, 279 - 50),
-    # ),
-    # panda
-    # "/dev/cu.usbserial-FT3M9NVB": DynamixelRobotConfig(
-    "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT3M9NVB-if00-port0": DynamixelRobotConfig(
-        joint_ids=(1, 2, 3, 4, 5, 6, 7),
-        joint_offsets=(
-            3 * np.pi / 2,
-            2 * np.pi / 2,
-            1 * np.pi / 2,
-            4 * np.pi / 2,
-            -2 * np.pi / 2 + 2 * np.pi,
-            3 * np.pi / 2,
-            4 * np.pi / 2,
-        ),
-        joint_signs=(1, -1, 1, 1, 1, -1, 1),
-        gripper_config=(8, 195, 152),
-    ),
-    # Left UR
-    "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7WBEIA-if00-port0": DynamixelRobotConfig(
-        joint_ids=(1, 2, 3, 4, 5, 6),
-        joint_offsets=(
-            0,
-            1 * np.pi / 2 + np.pi,
-            np.pi / 2 + 0 * np.pi,
-            0 * np.pi + np.pi / 2,
-            np.pi - 2 * np.pi / 2,
-            -1 * np.pi / 2 + 2 * np.pi,
-        ),
-        joint_signs=(1, 1, -1, 1, 1, 1),
-        gripper_config=(7, 20, -22),
-    ),
-    # Right UR
-    "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7WBG6A-if00-port0": DynamixelRobotConfig(
-        joint_ids=(1, 2, 3, 4, 5, 6),
-        joint_offsets=(
-            np.pi + 0 * np.pi,
-            2 * np.pi + np.pi / 2,
-            2 * np.pi + np.pi / 2,
-            2 * np.pi + np.pi / 2,
-            1 * np.pi,
-            3 * np.pi / 2,
-        ),
-        joint_signs=(1, 1, -1, 1, 1, 1),
-        gripper_config=(7, 286, 248),
-    ),
-}
-
+def load_config(port: str, config_folder_path: str = CONFIG_FOLDER_PATH) -> DynamixelRobotConfig:
+    path = Path(config_folder_path) / (Path(port).name + ".json")
+    assert path.exists()
+    with path.open(mode="r") as json_file:
+        json_data = json.load(json_file)
+    return DynamixelRobotConfig(**json_data)
 
 class GelloAgent(Agent):
     def __init__(
@@ -130,10 +71,9 @@ class GelloAgent(Agent):
                 port=port, start_joints=start_joints
             )
         else:
-            assert os.path.exists(port), port
-            assert port in PORT_CONFIG_MAP, f"Port {port} not in config map"
+            assert Path(port).exists(), port
 
-            config = PORT_CONFIG_MAP[port]
+            config = load_config(port)
             self._robot = config.make_robot(port=port, start_joints=start_joints)
 
     def act(self, obs: Dict[str, np.ndarray]) -> np.ndarray:
@@ -149,3 +89,24 @@ class GelloAgent(Agent):
         else:
             self._robot.set_torque_mode(False)
             return dyna_joints
+
+
+if __name__ == "__main__":
+
+    # Test storing a configuration
+
+    config = DynamixelRobotConfig(
+        joint_ids=(1, 2, 3, 4, 5, 6, 7),
+        joint_offsets=(4.595, 3.124, 4.550, 1.323, 3.336, 1.147, 5.165),
+        joint_signs=(1, -1, 1, -1, 1, 1, 1),
+        gripper_config=(8, 198, 148),
+    )
+    store_config(
+        config=config,
+        port="/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_TEST-if00-port0",
+    )
+
+    # Test loading a configuration
+
+    loaded_config = load_config(port="/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_TEST-if00-port0")
+    print(loaded_config)
