@@ -6,6 +6,7 @@ import numpy as np
 import tyro
 
 from gello.dynamixel.driver import DynamixelDriver
+from gello.agents.gello_agent import DynamixelRobotConfig, store_config
 
 MENAGERIE_ROOT: Path = Path(__file__).parent / "third_party" / "mujoco_menagerie"
 
@@ -49,14 +50,18 @@ def get_config(args: Args) -> None:
     # find the offset, which is a multiple of np.pi/2 that minimizes the error between the current joint state and args.start_joints
     # this is done by brute force, we seach in a range of +/- 8pi
 
-    def get_error(offset: float, index: int, joint_state: np.ndarray) -> float:
-        joint_sign_i = args.joint_signs[index]
-        joint_i = joint_sign_i * (joint_state[index] - offset)
-        start_i = args.start_joints[index]
-        return np.abs(joint_i - start_i)
+    # def get_error(offset: float, index: int, joint_state: np.ndarray) -> float:
+    #     joint_sign_i = args.joint_signs[index]
+    #     joint_i = joint_sign_i * (joint_state[index] - offset)
+    #     start_i = args.start_joints[index]
+    #     return np.abs(joint_i - start_i)
+
+    # Warmup
 
     for _ in range(10):
-        driver.get_joints()  # warmup
+        driver.get_joints()
+
+    # Determine configuration
 
     for _ in range(1):
 
@@ -70,14 +75,25 @@ def get_config(args: Args) -> None:
         print(f"Precise offsets                   : {[f'{x:.3f}' for x in precise_offsets]}".replace("'", ""))
         print(f"Closest offsets as multiple of pi : {[f'{x}*np.pi/2' for x in pi_offset]}".replace("'", ""))
         if args.gripper:
-            print(
-                "Gripper open (degrees)       :",
-                np.rad2deg(driver.get_joints()[-1]) - 0.2,
-            )
-            print(
-                "Gripper closed (degrees)     :",
-                np.rad2deg(driver.get_joints()[-1]) - 42,
-            )
+            gripper_open = np.rad2deg(driver.get_joints()[-1]) - 0.2
+            gripper_closed = np.rad2deg(driver.get_joints()[-1]) - 42
+            print(f"Gripper open (degrees)       : {gripper_open}")
+            print(f"Gripper closed (degrees)     : {gripper_closed}")
+
+    # Store configuration
+    
+    store = input("Do you want to store the configuration? (y|n)\n")
+    if store.lower() == "y" or store.lower() == "yes":
+        config = DynamixelRobotConfig(
+            joint_ids=tuple(range(1, args.num_robot_joints + 1)),
+            joint_offsets=tuple(precise_offsets.tolist()),
+            joint_signs=tuple(map(int, args.joint_signs)),
+            gripper_config=(args.num_joints, int(gripper_open), int(gripper_closed)) if args.gripper else None,
+        )
+        store_config(config=config, port=args.port)
+        print("The configuration was stored successfully")
+    else:
+        print("The configuration was not stored")
 
 
 def main(args: Args) -> None:
