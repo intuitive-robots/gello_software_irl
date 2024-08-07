@@ -40,10 +40,12 @@ def launch_robot_server(args: Args):
             host = args.host
         )
         
+        server_left_thread = threading.Thread(target=server_left.serve)
+        server_right_thread = threading.Thread(target=server_right.serve)
 
-        server_left_thread = threading.Thread(target=server_left.serve())
-        server_right_thread = threading.Thread(target=server_right.serve())
+        server_left_thread.start()
         print(f"Started server for left {args.hardware_port_left} on {args.host}:{args.server_port_left}")
+        server_right_thread.start()
         print(f"Started server for right {args.hardware_port_right} on {args.host}:{args.server_port_right}")
 
         server_left_thread.join()
