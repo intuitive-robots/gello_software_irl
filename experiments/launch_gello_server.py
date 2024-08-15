@@ -6,7 +6,7 @@ from gello.zmq_core.gello_server import GelloZMQServer
 
 @dataclass
 class Args:
-    robot: str = "panda"
+    mode: str = "unimanual"
     hardware_port: str = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94ER3L-if00-port0"
     hardware_port_left: str = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94ER3L-if00-port0"
     hardware_port_right: str = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT94EVRT-if00-port0"
@@ -17,7 +17,7 @@ class Args:
 
 
 def launch_robot_server(args: Args):
-    if args.robot == "panda":
+    if args.mode == "unimanual":
 
         server = GelloZMQServer(
             hardware_port = args.hardware_port,
@@ -26,7 +26,7 @@ def launch_robot_server(args: Args):
         )
         print(f"Started server for {args.hardware_port} on {args.host}:{args.server_port_right}")
         server.serve()
-    elif args.robot == "bimanual_panda":
+    elif args.mode == "bimanual":
 
         server_left = GelloZMQServer(
             hardware_port = args.hardware_port_left,
@@ -53,7 +53,7 @@ def launch_robot_server(args: Args):
 
     else:
         raise NotImplementedError(
-            f"Robot {args.robot} not implemented" + "!"
+            f"Mode {args.mode} not implemented" + "!"
         )
 
 def main(args):
