@@ -7,6 +7,3 @@
 [submodule "irl_polymetis"]
 	path = irl_polymetis
 	url = git@github.com:intuitive-robots/irl_polymetis.git
-[submodule "real_robot"]
-	path = real_robot
-	url = https://github.com/ALRhub/real_robot.git
