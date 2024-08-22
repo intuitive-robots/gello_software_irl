@@ -22,8 +22,8 @@ TODO insert video
 **Quick Summary**:
 
 1. Add [Idler](https://www.robotis.us/fpx330-h101-4pcs-set/) to joints 2 and 4, use short motor screws instead of the shorter packaged screws to mount on the arm parts. *Hint*: Use tape to fixate Idler and remove later, makes screwing in easier.
-2. Screw motors and parts together
-3. Attach wires
+2. Screw motors and parts together (dont forget the spring for the gripper!)
+3. Attach cables from base to top (see section Initial Configuration)
 4. Assemble controller according to manual
 5. Attach 1 spring to joint 2 and 1 to joint 4
 
@@ -89,7 +89,7 @@ The following steps are **required when setting up a new Gello**. However, it ca
 
 1. Go to: `cd ~/gello/gello_software`
 2. Start Conda environment: `conda activate gello_env`
-3. Determine the USB port of the Gellos with `ls /dev/serial/by-id/` and search for something similar to `usb-FTDI_USB__-__Serial_Converter_[...]` 
+3. Determine the USB port of the Gellos with `ls /dev/serial/by-id/` and search for something similar to `usb-FTDI_USB__-__Serial_Converter_[...]`. The current user needs access to the usb devices.
 4. Move the Gello arm to a position where the joint values of the panda are known such as:
 
 | ![panda_pose_01](media/panda_pose_01.jpg) | ![panda_pose_02](media/panda_pose_02.jpg) | ![panda_pose_03](media/panda_pose_03.jpg) |
@@ -105,7 +105,7 @@ The following steps are **required when setting up a new Gello**. However, it ca
 | ----------------------------------- | ----------------------------------- | --------------------------------- |
 | View from the side                  | View from the back                  | View from the top                 |
 
-7. If you are configuring a new Gello, you might have to try different values for the joint signs until no joint is inverted anymore.
+7. If you are configuring a new Gello, you might have to try different values for the joint signs until no joint is inverted anymore, the signs of the joints are depend on the orientation of the motor in the gello assembly.
 8. Run the script until you are satisfied with the configuration and press `y` to save the configuration in `configurations/[Port Name]`.
 9. If you are encountering a [port permission error](https://arduino.stackexchange.com/questions/21215/first-time-set-up-permission-denied-to-usb-port-ubuntu-14-04), try this:
 	- `sudo usermod -a -G dialout $USER`
