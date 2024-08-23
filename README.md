@@ -17,7 +17,8 @@ In the following we document the assembly and installation process as well as ho
 
 To assemble the hardware follow the [instructions of the original project](https://docs.google.com/document/d/1pzV8LDIGZh6zq8z-ZyKjUZ1ISkdCQctfu_05-ZY95eg/edit) or look at the summary below of our building process. We also recorded a video of the assembly process:
 
-TODO insert video
+[![Assembly Video](media/assembly.png)](https://bwsyncandshare.kit.edu/s/iZ839MJwoFPG66x)
+
 
 **Quick Summary**:
 
