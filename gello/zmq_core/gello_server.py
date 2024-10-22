@@ -25,7 +25,7 @@ class GelloZMQServer():
 
     def __init__(
         self,
-        hardware_port : int,
+        hardware_port : str,
         port: int = DEFAULT_GELLO_PORT,
         host: str = "127.0.0.1",
     ):
