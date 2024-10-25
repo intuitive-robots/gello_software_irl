@@ -26,7 +26,7 @@ To assemble the hardware follow the [instructions of the original project](https
 2. Screw motors and parts together (dont forget the spring for the gripper!)
 3. Attach cables from base to top (see section Initial Configuration)
 4. Assemble controller according to manual
-5. Attach 1 spring to joint 2 and 1 to joint 4
+5. Attach 1 spring to joint 2 that pushes forward
 
 ### Software Installation
 
@@ -47,7 +47,7 @@ To assemble the hardware follow the [instructions of the original project](https
 
 ### Initial Configuration
 
-Follow the [instructions of the original project](https://github.com/wuphilipp/gello_software?tab=readme-ov-file#gello-configuration-setup-please-read) to update the motor IDs using the Dynamixel Wizard and possibly test Gello in a simulation. Note that we changed the script `gello_get_offset.py`. If you want to use it, check out the instruction on how to configure Gello below.
+Follow the [instructions of the original project](https://github.com/wuphilipp/gello_software?tab=readme-ov-file#gello-configuration-setup-please-read) to update the motor IDs using the Dynamixel Wizard and possibly test Gello in a simulation. There seems to be a bug that prevents the Franka gripper from working in a simulation (See this [issue](https://github.com/wuphilipp/gello_software/issues/4)). Note that we changed the script `gello_get_offset.py`. If you want to use it, check out the instruction on how to configure Gello below.
 
 ## Instructions
 
@@ -106,7 +106,7 @@ The following steps are **required when setting up a new Gello**. However, it ca
 | ----------------------------------- | ----------------------------------- | --------------------------------- |
 | View from the side                  | View from the back                  | View from the top                 |
 
-7. If you are configuring a new Gello, you might have to try different values for the joint signs until no joint is inverted anymore, the signs of the joints are depend on the orientation of the motor in the gello assembly.
+7. If you are configuring a new Gello, you might have to try different values for the joint signs until no joint is inverted anymore, the signs of the joints depend on the orientation of the motor in the gello assembly.
 8. Run the script until you are satisfied with the configuration and press `y` to save the configuration in `configurations/[Port Name]`.
 9. If you are encountering a [port permission error](https://arduino.stackexchange.com/questions/21215/first-time-set-up-permission-denied-to-usb-port-ubuntu-14-04), try this:
 	- `sudo usermod -a -G dialout $USER`
