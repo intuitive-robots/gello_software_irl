@@ -25,7 +25,7 @@ class DynamixelRobotConfig:
     This will be different for each arm design. Reference the examples below for the correct signs for your robot.
     """
 
-    gripper_config: Tuple[int, int, int]
+    gripper_config: Optional[Tuple[int, int, int]]
     """The gripper config of GELLO. This is a tuple of (gripper_joint_id, degrees in open_position, degrees in closed_position)."""
 
     def __post_init__(self):
@@ -45,14 +45,14 @@ class DynamixelRobotConfig:
             start_joints=start_joints,
         )
 
-def store_config(config: DynamixelRobotConfig, port: str, config_folder_path: str = CONFIG_FOLDER_PATH) -> None:
+def store_config(config: DynamixelRobotConfig, port: str, config_folder_path: str = str(CONFIG_FOLDER_PATH)) -> None:
     json_data =  json.dumps(asdict(config), indent=4)
     path = Path(config_folder_path) / (Path(port).name + ".json")
     path.parent.mkdir(parents=False, exist_ok=True)
     with path.open(mode="w") as json_file:
         json_file.write(json_data)
 
-def load_config(port: str, config_folder_path: str = CONFIG_FOLDER_PATH) -> DynamixelRobotConfig:
+def load_config(port: str, config_folder_path: str = str(CONFIG_FOLDER_PATH)) -> DynamixelRobotConfig:
     path = Path(config_folder_path) / (Path(port).name + ".json")
     assert path.exists()
     with path.open(mode="r") as json_file:
@@ -60,6 +60,7 @@ def load_config(port: str, config_folder_path: str = CONFIG_FOLDER_PATH) -> Dyna
     return DynamixelRobotConfig(**json_data)
 
 class GelloAgent(Agent):
+    
     def __init__(
         self,
         port: str,
@@ -76,6 +77,7 @@ class GelloAgent(Agent):
             config = load_config(port)
             self._robot = config.make_robot(port=port, start_joints=start_joints)
 
+    # This function is a leftover from the original source but at the moment it is not possible to control Gello's joints
     def act(self, obs: Dict[str, np.ndarray]) -> np.ndarray:
         return self._robot.get_joint_state()
         dyna_joints = self._robot.get_joint_state()

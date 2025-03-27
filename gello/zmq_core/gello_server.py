@@ -1,20 +1,19 @@
 import pickle
 import threading
 import itertools
-from typing import Any, Dict
+from typing import Any, Optional
 from gello.agents.gello_agent import GelloAgent
 
-import numpy as np
 import zmq
 import torch
 from typing import NamedTuple
 
 
 class ArmState(NamedTuple):
-    joint_pos: torch.Tensor
-    joint_vel: torch.Tensor
-    ee_pos: torch.Tensor
-    ee_vel: torch.Tensor
+    joint_pos: Optional[torch.Tensor]
+    joint_vel: Optional[torch.Tensor]
+    ee_pos: Optional[torch.Tensor]
+    ee_vel: Optional[torch.Tensor]
 
 
 DEFAULT_GELLO_PORT = 6000
